@@ -1,0 +1,70 @@
+# Dependencies and libraries
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Production and build
+/build
+/dist
+.env.production
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+.DS_Store
+*.log
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Backend specific
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Frontend specific
+/frontend/.cache
+frontend/build/
+frontend/.turbo
+
+# System
+.classpath
+.project
+.settings/
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node
+node_modules
+*.npm
+npm-debug.log
+.npm
+
+# Misc
+.cache
+.env
+dist
