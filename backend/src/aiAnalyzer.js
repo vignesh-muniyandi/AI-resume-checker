@@ -185,52 +185,247 @@ function parseAnalysisResponse(responseText) {
  */
 function generateDemoAnalysis(resumeText) {
   console.log(
-    "✨ DEMO MODE: Generating sample analysis (Connect real OpenAI API key for actual analysis)",
+    "✨ DEMO MODE: Generating contextual analysis based on resume content",
   );
 
-  // Detect some keywords to make analysis contextual
-  const hasSkills = /skill|experience|proficient/i.test(resumeText);
-  const hasEducation = /bachelor|master|degree|university|college/i.test(
-    resumeText,
-  );
-  const hasProjects = /project|built|developed|created|implemented/i.test(
-    resumeText,
-  );
+  const lowerText = resumeText.toLowerCase();
+
+  // Detect resume components and skills
+  const sections = {
+    hasEducation:
+      /bachelor|master|degree|university|college|phd|certification/i.test(
+        resumeText,
+      ),
+    hasProjects: /project|built|developed|created|implemented|deployed/i.test(
+      resumeText,
+    ),
+    hasExperience:
+      /experience|worked|employed|role|position|company|organization/i.test(
+        resumeText,
+      ),
+    hasAchievements:
+      /achievement|award|recognition|promoted|led|managed|increased|improved|reduced|optimized/i.test(
+        resumeText,
+      ),
+    hasMetrics: /\d+%|\$\d+|increased|decreased|grew|expanded/i.test(
+      resumeText,
+    ),
+    hasSkills:
+      /python|java|javascript|react|angular|node|sql|aws|azure|gcp|devops|ci\/cd|api|rest|microservice|machine learning|ai|deep learning|data|analytics|management|leadership/i.test(
+        resumeText,
+      ),
+    hasGithub: /github|gitlab|bitbucket|portfolio|website|linkedin|link/i.test(
+      resumeText,
+    ),
+  };
+
+  // Calculate score components
+  let score = 40;
+  let strengthCount = 0;
+  let weaknessAreas = [];
+
+  if (sections.hasEducation) {
+    score += 15;
+    strengthCount++;
+  }
+  if (sections.hasExperience) {
+    score += 15;
+    strengthCount++;
+  }
+  if (sections.hasProjects) {
+    score += 10;
+    strengthCount++;
+  }
+  if (sections.hasAchievements) {
+    score += 10;
+    strengthCount++;
+  }
+  if (sections.hasMetrics) {
+    score += 10;
+    strengthCount++;
+  }
+  if (sections.hasSkills) {
+    score += 5;
+    strengthCount++;
+  }
+  if (sections.hasGithub) {
+    score += 5;
+    strengthCount++;
+  }
+
+  // Ensure score is within 0-100
+  score = Math.min(100, Math.max(0, score));
+
+  // Generate context-specific strengths
+  const strengths = [];
+  const weaknesses = [];
+  const missingSkills = [];
+  const missingSections = [];
+
+  // Strengths based on what's present
+  if (sections.hasEducation) {
+    strengths.push("Clear educational background documented");
+  }
+  if (sections.hasExperience) {
+    strengths.push("Relevant work experience presented");
+  }
+  if (sections.hasProjects) {
+    strengths.push("Demonstrates practical project experience");
+  }
+  if (sections.hasMetrics) {
+    strengths.push("Includes quantifiable achievements and metrics");
+  }
+  if (sections.hasSkills) {
+    strengths.push("Lists relevant technical skills");
+  }
+
+  // Default strengths if not enough detected
+  if (strengths.length < 3) {
+    strengths.push("Generally well-structured resume format");
+  }
+  if (strengths.length < 3) {
+    strengths.push("Professional tone and language");
+  }
+
+  // Weaknesses based on what's missing
+  if (!sections.hasMetrics) {
+    weaknesses.push(
+      "Missing quantifiable metrics and achievements (e.g., '25% productivity improvement')",
+    );
+  }
+  if (!sections.hasProjects) {
+    weaknesses.push(
+      "Limited demonstration of project work and technical accomplishments",
+    );
+  }
+  if (!sections.hasAchievements) {
+    weaknesses.push(
+      "Could highlight more significant accomplishments and impact",
+    );
+  }
+  if (!sections.hasGithub) {
+    weaknesses.push(
+      "No links to portfolio, GitHub, or professional online presence",
+    );
+  }
+  if (!sections.hasEducation && !sections.hasExperience) {
+    weaknesses.push(
+      "Educational or work experience section needs to be more prominent",
+    );
+  }
+
+  // Ensure we have at least 3 weaknesses
+  while (weaknesses.length < 3) {
+    const defaults = [
+      "Could include more industry-specific keywords",
+      "Consider adding certifications or continuous learning",
+      "Technical depth could be better articulated",
+    ];
+    if (!weaknesses.includes(defaults[weaknesses.length])) {
+      weaknesses.push(defaults[weaknesses.length]);
+    }
+  }
+
+  // Missing skills based on resume type
+  if (lowerText.includes("data") || lowerText.includes("analyst")) {
+    missingSkills.push("Advanced SQL and data optimization");
+    missingSkills.push("Data visualization tools (Tableau, Power BI)");
+  }
+  if (
+    lowerText.includes("develop") ||
+    lowerText.includes("engineer") ||
+    lowerText.includes("software")
+  ) {
+    missingSkills.push("Cloud platforms (AWS, Azure, GCP)");
+    missingSkills.push("CI/CD pipelines and DevOps");
+  }
+  if (lowerText.includes("ai") || lowerText.includes("machine learning")) {
+    missingSkills.push("TensorFlow or PyTorch experience");
+    missingSkills.push("MLOps and model deployment");
+  }
+  if (lowerText.includes("manager") || lowerText.includes("lead")) {
+    missingSkills.push("Strategic planning and OKR setting");
+    missingSkills.push("Team development and coaching");
+  }
+
+  // Default missing skills if not enough detected
+  if (missingSkills.length < 2) {
+    missingSkills.push("Emerging technologies and frameworks");
+    missingSkills.push("Cross-functional collaboration tools");
+  }
+
+  // Missing sections based on what's not found
+  if (!sections.hasGithub) {
+    missingSections.push("Link to GitHub/Portfolio/Online Profile");
+  }
+  if (!sections.hasAchievements) {
+    missingSections.push("Impact and achievements summary");
+  }
+  const hasCerts = /certification|cert|license/i.test(resumeText);
+  if (!hasCerts) {
+    missingSections.push("Relevant certifications or credentials");
+  }
+
+  // Generate specific suggestions
+  const suggestions = [
+    `Focus on adding ${!sections.hasMetrics ? "quantifiable results and metrics" : "more specific impact metrics"} to each role`,
+    `${!sections.hasGithub ? "Add links to your portfolio, GitHub, or professional online presence" : "Ensure your portfolio/GitHub links are current and professional"}`,
+    `${
+      !sections.hasProjects
+        ? "Include 2-3 key projects you've built or contributed to with outcomes"
+        : "Highlight the business impact of your projects"
+    }`,
+    `${
+      score < 60
+        ? "Reorganize your resume to emphasize your strongest qualifications upfront"
+        : "Consider tailoring this resume for specific job descriptions"
+    }`,
+    `Include any relevant ${
+      score < 75
+        ? "certifications, awards, or speaking engagements to boost credibility"
+        : "continuous learning or professional development activities"
+    }`,
+  ];
+
+  // Generate context-specific feedback
+  let feedbackContext = "";
+  if (score < 50) {
+    feedbackContext = `This resume needs significant improvements. Start by adding more quantifiable achievements and clearer job responsibilities. Include specific metrics and business impact for each role.`;
+  } else if (score < 65) {
+    feedbackContext = `Your resume has a solid foundation but needs refinement. Focus on adding more specific metrics and measurable achievements. Include links to your portfolio or GitHub to demonstrate hands-on experience.`;
+  } else if (score < 80) {
+    feedbackContext = `This is a well-structured resume with good content. To make it exceptional, add more specific metrics, quantifiable achievements, and ensure all sections highlight your business impact and unique value.`;
+  } else {
+    feedbackContext = `Excellent resume structure with strong content. To make it stand out further, ensure every bullet point quantifies impact, include portfolio links, and tailor it for specific positions to maximize relevance.`;
+  }
+
+  const overallFeedback = `${feedbackContext} Your resume score of ${score}/100 reflects a ${
+    score < 50
+      ? "developing"
+      : score < 65
+        ? "solid"
+        : score < 80
+          ? "strong"
+          : "excellent"
+  } profile. The key to improvement is demonstrating measurable impact and ensuring your most relevant skills and experiences are prominently featured. Consider having someone from your target industry review it for industry-specific feedback.`;
 
   return {
-    overallScore: 72,
+    overallScore: score,
     candidateSummary:
-      "A competent professional with relevant experience demonstrated in the resume. The candidate shows promise with a solid foundation in their field.",
-    strengths: [
-      "Clear career objectives and goals",
-      "Relevant professional experience presented clearly",
-      "Good structure and formatting of resume",
-    ],
-    weaknesses: [
-      "Could include more quantifiable achievements",
-      "Technical skills section could be more comprehensive",
-      "Limited information about specific methodologies used",
-    ],
-    missingSkills: [
-      "Machine Learning / AI frameworks",
-      "Cloud platforms (AWS, Azure, GCP)",
-      "Data visualization tools",
-      "Advanced SQL optimization",
-    ],
-    missingSections: [
-      "Certifications section",
-      "GitHub/Portfolio link",
-      "Publications or speaking engagements",
-    ],
-    suggestions: [
-      "Add percentages or metrics to show impact (e.g., 'Improved performance by 35%')",
-      "Include prominent technical skills section at the top",
-      "Add a link to your portfolio or GitHub profile",
-      "Consider adding relevant certifications or training courses",
-      "Highlight any leadership or mentoring experiences",
-    ],
-    overallFeedback:
-      "Your resume demonstrates solid foundational knowledge and experience in your field. To strengthen it further, focus on quantifying your achievements and emphasizing the business impact of your work. Adding specific technologies and tools you've mastered would make you more competitive. Consider including a portfolio link or certifications to demonstrate continuous learning. Overall, this is a good starting point that can be enhanced with these targeted improvements.",
+      strengthCount >= 5
+        ? "A well-rounded professional with strong qualifications across education, experience, and technical skills. Demonstrates concrete achievements and measurable impact."
+        : strengthCount >= 3
+          ? "A qualified candidate with relevant background and experience. Shows promise with documented responsibilities and technical capabilities."
+          : "An emerging professional with foundational qualifications. Has basic resume structure with room for more specific achievements and impact demonstration.",
+    strengths: strengths.slice(0, 3),
+    weaknesses: weaknesses.slice(0, 3),
+    missingSkills: missingSkills.slice(0, 2),
+    missingSections:
+      missingSections.length > 0
+        ? missingSections
+        : ["Professional endorsements or recommendations"],
+    suggestions: suggestions.slice(0, 5),
+    overallFeedback: overallFeedback,
   };
 }
 

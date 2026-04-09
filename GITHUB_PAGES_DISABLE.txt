@@ -1,0 +1,81 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    DISABLE GITHUB PAGES - FINAL SOLUTION
+═══════════════════════════════════════════════════════════════════════════════
+
+The 404 error is because GitHub Pages is enabled for your repository.
+
+AUTOMATIC FILE ADDED:
+✓ .nojekyll file created in repository root (prevents Jekyll processing)
+
+
+MANUAL STEPS TO DISABLE GITHUB PAGES:
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Go to your GitHub repository:
+   https://github.com/vignesh-muniyandi/AI-resume-checker
+
+2. Click "Settings" (top menu bar)
+
+3. Click "Pages" in left sidebar
+
+4. Under "Build and deployment" → "Source":
+   Current value: probably shows "Deploy from a branch" or "main"
+   Change to: "None" or "Disabled"
+
+5. Click "Save" button
+
+6. Wait 1-2 minutes for changes to take effect
+
+
+WHAT THIS DOES:
+═══════════════════════════════════════════════════════════════════════════════
+✓ Disables GitHub Pages hosting
+✓ Removes the 404 error
+✓ Your repository becomes a pure code repository
+✓ You can still deploy later if needed
+
+
+AFTER PAGES IS DISABLED:
+═══════════════════════════════════════════════════════════════════════════════
+✓ GitHub Pages URL (https://vignesh-muniyandi.github.io/AI-resume-checker/)
+  will stop showing 404 - it just won't be hosted anymore
+  
+✓ Your GitHub repository URL remains perfect:
+  https://github.com/vignesh-muniyandi/AI-resume-checker
+  
+✓ All your code will be safely stored and shareable
+
+
+FILES PUSHED TO GITHUB:
+═══════════════════════════════════════════════════════════════════════════════
+- .nojekyll (prevents Jekyll processing)
+- All other configuration files
+
+
+WHAT'S INCLUDED IN THIS REPOSITORY:
+═══════════════════════════════════════════════════════════════════════════════
+
+Backend (Node.js + Express):
+  - server.js - Main API server
+  - src/aiAnalyzer.js - Resume analysis (with contextual demo analysis)
+  - src/pdfParser.js - PDF reading
+  - src/validators.js - Input validation
+
+Frontend (React):
+  - App.js & App.css - Main component
+  - components/ResumeUpload - File upload interface
+  - components/AnalysisResults - Results display
+
+How to run locally:
+  Terminal 1: cd backend && npm install && npm run dev
+  Terminal 2: cd frontend && npm install && npm start
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+For help or questions:
+- Review README.md in your repository for full setup instructions
+- All error guides are included in your repository root
+
+
+═══════════════════════════════════════════════════════════════════════════════
