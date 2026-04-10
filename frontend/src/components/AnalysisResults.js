@@ -1,6 +1,6 @@
 /**
  * Analysis Results Component
- * Displays the AI-generated resume analysis in a structured format
+ * Displays the AI-generated resume analysis with job-specific feedback
  */
 
 import React from "react";
@@ -32,10 +32,37 @@ function AnalysisResults({ data, onReset }) {
     return "Needs Improvement";
   };
 
+  /**
+   * Get job label from value
+   */
+  const getJobLabel = (jobType) => {
+    const jobs = {
+      hr: "HR (Human Resources)",
+      data_analyst: "Data Analyst",
+      sales: "Sales Executive",
+      business_analyst: "Business Analyst",
+      tele_caller: "Tele Caller / BPO",
+      developer: "Software Developer",
+    };
+    return jobs[jobType] || "General";
+  };
+
   return (
     <div className="results-container">
-      {/* Header with Score */}
+      {/* Top Action Button - Analyze Another Resume */}
+      <div className="results-top-action">
+        <button className="button button-secondary" onClick={onReset}>
+          ← Analyze Another Resume
+        </button>
+      </div>
+
+      {/* Header with Score and Job Position */}
       <div className="results-header">
+        {data.jobType && (
+          <div className="job-position-badge">
+            📍 Position: <strong>{getJobLabel(data.jobType)}</strong>
+          </div>
+        )}
         <div className="score-badge">
           <div
             className="score-circle"
@@ -50,11 +77,66 @@ function AnalysisResults({ data, onReset }) {
         </div>
         <div className="results-header-text">
           <h2>Resume Analysis Complete</h2>
-          <p>Here's your personalized feedback</p>
+          <p>
+            Your personalized feedback for{" "}
+            <strong>{getJobLabel(data.jobType).toLowerCase()}</strong>
+          </p>
         </div>
       </div>
 
       {/* Results Grid */}
+      {/* JOB MATCH SECTION */}
+      {data.jobMatchPercentage && (
+        <div className="job-match-section">
+          <div className="match-status-indicator">
+            <div className="match-percentage">
+              <span className="percentage-value">
+                {data.jobMatchPercentage}%
+              </span>
+              <span className="percentage-label">Job Match</span>
+            </div>
+            <div className="match-status-text">
+              <p className="status-message">{data.jobMatchStatus}</p>
+            </div>
+          </div>
+
+          {data.matchedSkills && data.matchedSkills.length > 0 && (
+            <div className="matched-items">
+              <h4>✅ Your Matching Skills:</h4>
+              <div className="skills-found">
+                {data.matchedSkills.map((skill, idx) => (
+                  <span key={idx} className="skill-match">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {data.skillAdvice && (
+            <div className="skill-advice">
+              <h4>📚 Related Skills to Develop:</h4>
+              <div className="advice-items">
+                <p>
+                  <strong>Top Priority:</strong> {data.skillAdvice.top_priority}
+                </p>
+                <p>
+                  <strong>Secondary Skills:</strong>{" "}
+                  {data.skillAdvice.secondary}
+                </p>
+                <p>
+                  <strong>Tools/Software:</strong> {data.skillAdvice.tools}
+                </p>
+                <p>
+                  <strong>Recommended Certification:</strong>{" "}
+                  {data.skillAdvice.certification}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="results-grid">
         {/* Candidate Summary Section */}
         <section className="result-section summary-section">
@@ -92,7 +174,7 @@ function AnalysisResults({ data, onReset }) {
 
         {/* Missing Skills Section */}
         <section className="result-section missing-skills-section">
-          <h3>🎯 Missing Skills</h3>
+          <h3>🎯 Missing Skills for {getJobLabel(data.jobType)}</h3>
           <div className="skills-tags">
             {data.missingSkills && data.missingSkills.length > 0 ? (
               data.missingSkills.map((skill, index) => (
@@ -139,7 +221,7 @@ function AnalysisResults({ data, onReset }) {
       {/* Action Buttons */}
       <div className="results-actions">
         <button className="button button-primary" onClick={onReset}>
-          Analyze Another Resume
+          ↻ Analyze Another Resume
         </button>
       </div>
 

@@ -10,8 +10,19 @@ import "./ResumeUpload.css";
 function ResumeUpload({ onSuccess, onError, isLoading, setIsLoading, error }) {
   const [dragActive, setDragActive] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [selectedJob, setSelectedJob] = useState(""); // Job selection state
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+  // Job descriptions for dropdown
+  const jobOptions = [
+    { value: "hr", label: "HR (Human Resources)", icon: "👥" },
+    { value: "data_analyst", label: "Data Analyst", icon: "📊" },
+    { value: "sales", label: "Sales Executive", icon: "📈" },
+    { value: "business_analyst", label: "Business Analyst", icon: "💼" },
+    { value: "tele_caller", label: "Tele Caller / BPO", icon: "☎️" },
+    { value: "developer", label: "Software Developer", icon: "💻" },
+  ];
 
   /**
    * Handle file selection from input
@@ -54,9 +65,28 @@ function ResumeUpload({ onSuccess, onError, isLoading, setIsLoading, error }) {
    * Process and upload file
    */
   const processFile = async (file) => {
-    // Validate file type
-    if (file.type !== "application/pdf") {
-      onError("Please upload a PDF file");
+    // Validate job selection
+    if (!selectedJob) {
+      onError("Please select a job position first");
+      return;
+    }
+
+    // Validate file type - PDF and Word documents
+    const allowedTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+      "application/msword", // .doc
+    ];
+
+    // Also check file extension for better compatibility
+    const fileName = file.name.toLowerCase();
+    const allowedExtensions = [".pdf", ".docx", ".doc"];
+    const hasValidExtension = allowedExtensions.some((ext) =>
+      fileName.endsWith(ext),
+    );
+
+    if (!allowedTypes.includes(file.type) && !hasValidExtension) {
+      onError("Please upload a PDF or Word document (.pdf, .docx, .doc)");
       return;
     }
 
@@ -82,6 +112,7 @@ function ResumeUpload({ onSuccess, onError, isLoading, setIsLoading, error }) {
       // Create FormData
       const formData = new FormData();
       formData.append("resume", file);
+      formData.append("jobType", selectedJob); // Add selected job type
 
       // Send to backend
       const response = await axios.post(
@@ -96,7 +127,11 @@ function ResumeUpload({ onSuccess, onError, isLoading, setIsLoading, error }) {
       );
 
       if (response.data.success && response.data.analysis) {
-        onSuccess(response.data.analysis);
+        // Include job info in response
+        onSuccess({
+          ...response.data.analysis,
+          jobType: selectedJob,
+        });
       } else {
         onError("Failed to analyze resume");
       }
@@ -115,8 +150,39 @@ function ResumeUpload({ onSuccess, onError, isLoading, setIsLoading, error }) {
       <div className="upload-card">
         <h2>Upload Your Resume</h2>
         <p className="upload-description">
-          Upload your resume as a PDF to get AI-powered feedback and suggestions
-          for improvement.
+          Select a job position and upload your resume as a PDF or Word document
+          to get AI-powered feedback tailored to that role.
+        </p>
+
+        {/* Job Selection Dropdown */}
+        <div className="job-selection-section">
+          <label htmlFor="job-select" className="job-select-label">
+            <span className="label-text">Step 1: Select Job Position</span>
+          </label>
+          <select
+            id="job-select"
+            value={selectedJob}
+            onChange={(e) => setSelectedJob(e.target.value)}
+            className="job-select-dropdown"
+            disabled={isLoading}
+          >
+            <option value="">-- Choose a Job Position --</option>
+            {jobOptions.map((job) => (
+              <option key={job.value} value={job.value}>
+                {job.icon} {job.label}
+              </option>
+            ))}
+          </select>
+          {selectedJob && (
+            <div className="job-selected-badge">
+              {jobOptions.find((j) => j.value === selectedJob)?.icon}{" "}
+              {jobOptions.find((j) => j.value === selectedJob)?.label} selected
+            </div>
+          )}
+        </div>
+
+        <p className="upload-description" style={{ marginTop: "20px" }}>
+          Step 2: Upload your resume
         </p>
 
         {/* Drag and Drop Area */}
@@ -130,7 +196,7 @@ function ResumeUpload({ onSuccess, onError, isLoading, setIsLoading, error }) {
           <input
             id="file-input"
             type="file"
-            accept=".pdf"
+            accept=".pdf,.docx,.doc"
             onChange={handleFileSelect}
             disabled={isLoading}
             style={{ display: "none" }}
@@ -138,7 +204,7 @@ function ResumeUpload({ onSuccess, onError, isLoading, setIsLoading, error }) {
 
           <label htmlFor="file-input" className="file-input-label">
             <div className="upload-icon">📄</div>
-            <h3>Drag and drop your PDF resume here</h3>
+            <h3>Drag and drop your resume here</h3>
             <p>or</p>
             <button
               type="button"
@@ -179,10 +245,9 @@ function ResumeUpload({ onSuccess, onError, isLoading, setIsLoading, error }) {
         <div className="requirements">
           <h4>Requirements:</h4>
           <ul>
-            <li>✓ PDF format only</li>
+            <li>✓ PDF or Word format (.pdf, .docx, .doc)</li>
             <li>✓ File size up to 5MB</li>
             <li>✓ Clear, readable text</li>
-            <li>✓ At least 100 characters</li>
           </ul>
         </div>
       </div>

@@ -14,7 +14,7 @@ const fs = require("fs");
 dotenv.config();
 
 // Import custom modules
-const { extractTextFromPDF } = require("./src/pdfParser");
+const { extractTextFromDocument } = require("./src/documentParser");
 const { analyzeResumeWithAI } = require("./src/aiAnalyzer");
 const { validateUpload } = require("./src/validators");
 
@@ -25,7 +25,9 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin: function (origin, callback) {
+      return callback(null, true);
+    },
     credentials: true,
   }),
 );
@@ -51,10 +53,22 @@ const upload = multer({
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "application/pdf") {
+    const allowedMimetypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+      "application/msword", // .doc (older format)
+    ];
+
+    const allowedExtensions = [".pdf", ".docx", ".doc"];
+    const fileExt = path.extname(file.originalname).toLowerCase();
+
+    if (
+      allowedMimetypes.includes(file.mimetype) ||
+      allowedExtensions.includes(fileExt)
+    ) {
       cb(null, true);
     } else {
-      cb(new Error("Only PDF files are allowed"));
+      cb(new Error("Only PDF and Word documents (DOCX) are allowed"));
     }
   },
 });
@@ -71,7 +85,7 @@ app.get("/api/health", (req, res) => {
 /**
  * Main resume analysis endpoint
  * POST /api/analyze-resume
- * Accepts: PDF file
+ * Accepts: PDF or Word documents (DOCX)
  * Returns: Structured JSON with AI analysis
  */
 app.post("/api/analyze-resume", upload.single("resume"), async (req, res) => {
@@ -81,14 +95,24 @@ app.post("/api/analyze-resume", upload.single("resume"), async (req, res) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    console.log(`Processing file: ${req.file.filename}`);
+    // Get job type from form data
+    const jobType = req.body.jobType || "general";
 
-    // Extract text from PDF
+    console.log(
+      `Processing file: ${req.file.filename} (${req.file.mimetype}) for job: ${jobType}`,
+    );
+
+    // Extract text from document (PDF, DOCX, etc.)
     const filePath = req.file.path;
-    const resumeText = await extractTextFromPDF(filePath);
+    const resumeText = await extractTextFromDocument(
+      filePath,
+      req.file.mimetype,
+    );
 
     if (!resumeText || resumeText.trim().length === 0) {
-      return res.status(400).json({ error: "Could not extract text from PDF" });
+      return res
+        .status(400)
+        .json({ error: "Could not extract text from document" });
     }
 
     // Validate extracted text
@@ -99,8 +123,8 @@ app.post("/api/analyze-resume", upload.single("resume"), async (req, res) => {
 
     console.log(`Extracted text length: ${resumeText.length} characters`);
 
-    // Send to AI for analysis
-    const analysis = await analyzeResumeWithAI(resumeText);
+    // Send to AI for analysis with job type
+    const analysis = await analyzeResumeWithAI(resumeText, jobType);
 
     // Clean up uploaded file
     fs.unlink(filePath, (err) => {

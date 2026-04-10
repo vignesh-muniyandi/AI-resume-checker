@@ -21,14 +21,15 @@
 }
 
 .upload-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.98);
   border-radius: 20px;
   padding: 50px;
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.15),
-    0 0 1px rgba(0, 0, 0, 0.05);
+    0 20px 60px rgba(0, 0, 0, 0.2),
+    0 0 1px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
   position: relative;
   overflow: hidden;
 }
@@ -47,10 +48,10 @@
 @keyframes gradientShift {
   0%,
   100% {
-    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    background: linear-gradient(90deg, #ffc107, #ff9800, #ff6f00);
   }
   50% {
-    background: linear-gradient(-90deg, #f093fb, #764ba2, #667eea);
+    background: linear-gradient(-90deg, #ff6f00, #ff9800, #ffc107);
   }
 }
 
@@ -60,7 +61,7 @@
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: -0.3px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #ffc107, #ff9800);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -74,13 +75,100 @@
   font-weight: 400;
 }
 
+/* Job Selection Section */
+.job-selection-section {
+  margin-bottom: 40px;
+  padding: 25px;
+  background: linear-gradient(135deg, #fffaf0 0%, #ffe0b2 100%);
+  border-radius: 12px;
+  border-left: 5px solid #ffc107;
+  animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.job-select-label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #222;
+  font-size: 1.05rem;
+}
+
+.label-text {
+  background: linear-gradient(135deg, #ffc107, #ff9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.job-select-dropdown {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #222;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.job-select-dropdown:hover:not(:disabled) {
+  border-color: #ff9800;
+  box-shadow: 0 5px 15px rgba(255, 193, 7, 0.2);
+}
+
+.job-select-dropdown:focus {
+  outline: none;
+  border-color: #ff9800;
+  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+}
+
+.job-select-dropdown:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.job-selected-badge {
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  animation: slideInUp 0.4s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Drag and Drop Area - Advanced */
 .drag-drop-area {
-  border: 3px dashed #667eea;
+  border: 3px dashed #ffc107;
   border-radius: 16px;
   padding: 50px 30px;
   text-align: center;
-  background: linear-gradient(135deg, #f8f9ff 0%, #f5f7ff 100%);
+  background: linear-gradient(135deg, #fffaf0 0%, #fff8e1 100%);
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin-bottom: 25px;
@@ -88,42 +176,9 @@
   overflow: hidden;
 }
 
-.drag-drop-area::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(102, 126, 234, 0.05) 0%,
-    transparent 70%
-  );
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
-}
-
-.drag-drop-area:hover,
-.drag-drop-area:hover::before {
-  border-color: #764ba2;
-  background: linear-gradient(135deg, #f5f7ff 0%, #e8ecff 100%);
-  box-shadow: 0 15px 40px rgba(118, 75, 162, 0.15);
-  transform: translateY(-5px);
-}
-
-.drag-drop-area:hover::before {
-  opacity: 1;
-}
-
 .drag-drop-area.active {
-  border-color: #764ba2;
-  background: linear-gradient(135deg, #e8ecff 0%, #dfe0ff 100%);
-  box-shadow:
-    0 20px 50px rgba(118, 75, 162, 0.25),
-    inset 0 0 20px rgba(102, 126, 234, 0.1);
-  transform: scale(1.02);
+  border-color: #ffc107;
+  background: linear-gradient(135deg, #fffaf0 0%, #fff8e1 100%);
 }
 
 .file-input-label {

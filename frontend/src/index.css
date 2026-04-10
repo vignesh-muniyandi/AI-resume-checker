@@ -1,6 +1,14 @@
 /**
  * Global Styles for Resume Analyzer App - Advanced Design
- * Modern, animated, professional UI
+ * Modern, animated, professional UI with career-themed background
+ * 
+ * BACKGROUND IMAGE OPTIONS (replace the URL in body background):
+ * 1. Professional Career (Current): https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop
+ * 2. Business Growth: https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop
+ * 3. Team Collaboration: https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop
+ * 4. Career Success: https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop
+ * 5. Professional Development: https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop
+ * 6. Modern Workspace: https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop
  */
 
 * {
@@ -17,14 +25,72 @@ body {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 193, 7, 0.85) 0%,
+      rgba(255, 152, 0, 0.85) 50%,
+      rgba(255, 111, 0, 0.85) 100%
+    ),
+    url("https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&h=1080&fit=crop")
+      center/cover no-repeat fixed;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
   min-height: 100vh;
   color: #222;
   overflow-x: hidden;
   position: relative;
+  width: 100%;
 }
 
+/* Modern tech background pattern with SVG - Enhanced overlays */
 body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(255, 255, 255, 0.12) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 20%,
+      rgba(255, 193, 7, 0.15) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 90% 40%,
+      rgba(255, 111, 0, 0.12) 0%,
+      transparent 50%
+    ),
+    url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dotPattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse"><rect fill="%23FFC107" x="22" y="22" width="6" height="6" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23dotPattern)"/></svg>');
+  pointer-events: none;
+  z-index: 0;
+  animation: backgroundShift 20s ease infinite alternate;
+  background-size: cover;
+}
+
+@keyframes backgroundShift {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+/* Floating shapes background effect */
+body::after {
   content: "";
   position: fixed;
   top: 0;
@@ -33,14 +99,19 @@ body::before {
   height: 100%;
   background:
     radial-gradient(
-      circle at 20% 50%,
-      rgba(255, 255, 255, 0.05) 0%,
-      transparent 50%
+      circle at 15% 10%,
+      rgba(255, 200, 100, 0.05) 0%,
+      transparent 30%
     ),
     radial-gradient(
-      circle at 80% 80%,
-      rgba(255, 255, 255, 0.05) 0%,
-      transparent 50%
+      circle at 85% 90%,
+      rgba(100, 200, 255, 0.05) 0%,
+      transparent 30%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(200, 100, 255, 0.03) 0%,
+      transparent 60%
     );
   pointer-events: none;
   z-index: 0;
@@ -51,18 +122,20 @@ body::before {
   min-height: 100vh;
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: inherit;
+  width: 100%;
 }
 
 /* Header with Advanced Styling */
 .app-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 50%, #ff6f00 100%);
   background-attachment: fixed;
   color: white;
   padding: 60px 20px 50px 20px;
